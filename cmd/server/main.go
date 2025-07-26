@@ -30,7 +30,7 @@ func main() {
 
 	// Initialize repositories and services
 	guideRepo := repository.NewGuideRepository(repository.DB)
-	updateService := service.NewUpdateService(guideRepo)
+	updateService := service.NewUpdateService(guideRepo, geminiClient) // Pass geminiClient
 
 	// Initialize handlers
 	geminiHandler := handler.NewGeminiHandler(geminiClient)
@@ -71,7 +71,7 @@ func main() {
 	}()
 
 	log.Printf("Server started on :%s", cfg.Port)
-	if err := r.Run(":" + cfg.Port); err != nil {
+	if err := r.Run("0.0.0.0:" + cfg.Port); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
