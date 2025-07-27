@@ -89,7 +89,7 @@ func (s *UpdateService) ProcessUpdates(updates []models.OfficialUpdate) error {
 			log.Printf("Saved new official update: %s", update.Title)
 
 			// Now, use Gemini to generate or update a guide based on this official update
-			prompt := fmt.Sprintf("根据以下幻兽帕鲁官方更新内容，生成或更新一篇详细的游戏攻略：\n\n标题：%s\n内容：%s\n\n请确保攻略内容准确、全面，并包含游戏玩家可能关心的所有细节。", update.Title, update.Content)
+			prompt := fmt.Sprintf("你现在是【幻兽帕鲁】游戏的专属攻略创作AI。你的唯一职责是根据提供的攻略主题和相关信息，创作一篇极其准确、详细、全面且最新的幻兽帕鲁游戏攻略。严禁创作任何与幻兽帕鲁无关的内容。如果主题与幻兽帕鲁无关，或者你无法创作相关攻略，请直接回答“抱歉，我只能创作幻兽帕鲁相关的攻略。”\n\n攻略主题：%s\n相关内容：%s", update.Title, update.Content)
 
 			generatedContent, err := s.geminiClient.GenerateContent(context.Background(), prompt)
 			if err != nil {

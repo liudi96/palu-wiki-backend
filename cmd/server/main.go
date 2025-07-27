@@ -34,11 +34,19 @@ func main() {
 
 	// Initialize handlers
 	geminiHandler := handler.NewGeminiHandler(geminiClient)
+	adminHandler := handler.NewAdminHandler(guideRepo, updateService) // Initialize AdminHandler
 
 	// Register routes
 	apiGroup := r.Group("/api/v1")
 	{
 		apiGroup.POST("/gemini/generate", geminiHandler.GenerateContent)
+		apiGroup.POST("/admin/guides/topic", adminHandler.CreateGuideTopic) // New API for creating guide topics
+		apiGroup.GET("/admin/guides", adminHandler.GetGuidesForAdmin)       // New API for admin to view guides
+
+		// Public Guide APIs for frontend
+		guideHandler := handler.NewGuideHandler(guideRepo)
+		apiGroup.GET("/guides", guideHandler.GetGuides)
+		apiGroup.GET("/guides/:id", guideHandler.GetGuideByID)
 	}
 
 	// Start periodic update task
