@@ -40,5 +40,12 @@ func (h *GeminiHandler) GenerateContent(c *gin.Context) {
 		return
 	}
 
+	// Truncate content if it's too long to avoid potential network issues with large responses
+	// WeChat Mini Program might also have implicit limits on response size.
+	maxContentLength := 2000 // Example: Limit to 2000 characters
+	if len(content) > maxContentLength {
+		content = content[:maxContentLength] + "..." // Add ellipsis
+	}
+
 	c.JSON(http.StatusOK, GenerateContentResponse{Content: content})
 }

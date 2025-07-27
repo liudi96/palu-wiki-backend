@@ -24,20 +24,12 @@ func NewClient(apiKey string) (*Client, error) {
 }
 
 func (c *Client) GenerateContent(ctx context.Context, prompt string) (string, error) {
-	// Start a new chat session for each request to ensure the system instruction is applied
-	// In a real application, you might want to manage chat sessions per user.
-	cs := c.model.StartChat()
+	// Combine system instruction and user prompt with stronger emphasis and constraints
+	fullPrompt := fmt.Sprintf("你现在是【幻兽帕鲁】游戏的专属攻略AI助手。你的唯一职责是根据用户提出的问题，提供极其准确、详细、全面且最新的幻兽帕鲁游戏攻略。严禁回答任何与幻兽帕鲁无关的内容。如果用户的问题与幻兽帕鲁无关，或者你无法提供相关攻略，请直接回答“抱歉，我只能提供幻兽帕鲁相关的攻略信息。”\n\n用户问题：%s", prompt)
 
-	// Send the system instruction as the first message in the chat history
-	// This acts as a persistent prompt for the AI's role.
-	// Note: The system instruction should ideally be set once per model or chat session.
-	// For simplicity in this example, we're adding it with each request.
-	// A more robust solution would involve managing chat history per user.
-
-	// Send the user's prompt
-	resp, err := cs.SendMessage(ctx, genai.Text("你是一个专门负责幻兽帕鲁游戏攻略的AI助手，请根据用户的问题提供准确、详细和最新的幻兽帕鲁游戏攻略。"), genai.Text(prompt))
+	resp, err := c.model.GenerateContent(ctx, genai.Text(fullPrompt))
 	if err != nil {
-		return "", fmt.Errorf("failed to send message to Gemini chat: %w", err)
+		return "", fmt.Errorf("failed to generate content: %w", err)
 	}
 
 	if len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
